@@ -327,18 +327,56 @@ function addInstructor(req,res){
     }
 }
 
-function searchInstructor(req, res){
- 
-
+function listInstructor(req, res){
     Instructor.find({}, (err, instructors)=>{
         if(err){
             res.status(404).send({message: 'error al listar'});
         }else{
             res.status(200).send({instructor: instructors});
         }
-    })
+    });
 }
 
+function searchInstructor(){
+    var search = req.params.search;
+
+    Instructor.findOne()
+}
+
+function updateInstructor(req, res){
+    var instructorId = req.params.id;
+    var update = req.body;
+
+    Course.findByIdAndUpdate(instructorId, update, {new:true}, (err, instructorUpdate) => {
+        if(err){
+            res.status(500).send({
+            message: 'Error al acutalizar'});
+        }else{
+            if(!instructorUpdate){
+                res.status(404).send({message: 'No se ha podido actualizar'});
+            }else{
+                res.status(200).send({instructor: instructorUpdate});
+            }
+        }
+    });
+}
+
+function deleteCourse(req, res){
+    var courseId = req.params.id;
+
+    if(courseId != req.user.sub){
+        res.status(500).send({mnessage: 'No tienes permiso'});
+
+    }else{
+        Course.findByIdAndRemove(courseId, (err, courseDelete) => {
+            if(err){
+                res.status(500).send({message: 'Error al eliminar'});
+            }else{
+                res.status(200).send({message: 'Se elimino correctamente'});
+            }
+        });
+    }
+}
 /*------------------------------------------------Redes De estudio-------------------------------------------------------------------------*/ 
 function saveRedes(req,res){
     var params = req.body;
@@ -417,7 +455,8 @@ module.exports = {
     searchCourse,
     addInstructor,
     pruebaInstructor,
-    searchInstructor,
+    listInstructor,
+    updateInstructor,
     saveRedes,
     listRedes
 }

@@ -27,9 +27,10 @@ api.put('/Delete-Course/:id', educativeAdministracionController.deleteCourse);
 api.post('/Search-Course', educativeAdministracionController.searchCourse);
 
 /**---------------------------------------------------------INSTRUCTOR------------------------------------------------------------------- */
-api.get('/PruebaInstructor', educativeAdministracionController.pruebaInstructor)
-api.post('/saveInstructor', educativeAdministracionController.addInstructor)
-api.get('/searchInstructor', educativeAdministracionController.searchInstructor)
+api.get('/PruebaInstructor', educativeAdministracionController.pruebaInstructor);
+api.post('/saveInstructor', educativeAdministracionController.addInstructor);
+api.get('/listInstructor', educativeAdministracionController.listInstructor);
+api.put('/updateInstructor/:id', educativeAdministracionController.updateInstructor);
 
 /**---------------------------------------------------------REDES ACADEMICAS------------------------------------------------------------------- */
 api.post('/saveRedes', educativeAdministracionController.saveRedes);
