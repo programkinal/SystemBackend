@@ -5,7 +5,7 @@ var Schema = mongoose.Schema;
 
 var redesSchema = Schema({
     name: String,
-    career: String,
+    career: {type: Schema.ObjectId, ref: 'Career'},
     dateInit: String,
     dateFinal: String
 });

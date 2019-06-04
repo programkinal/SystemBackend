@@ -385,11 +385,32 @@ function saveRedes(req,res){
     }
 }
 function listRedes(req, res){
+    var idName = [];
+    var names = [];
     Redes.find({},(err,listar)=>{
         if(err){
             res.status(500).send({message: 'Ocurrio un error'});
         }else{
-            res.status(200).send({redes: listar});
+            listar.forEach(element => {
+                idName.push(element.career)
+            });
+
+            EducationalCareers.find({_id: idName}, (err, results)=>{
+                if(err){
+                  res.status(404).send({message: 'Error general'})
+                }else{
+                  if(!results){
+                    res.status(200).send({message: 'No hay registros'});
+                  }else{
+                      results.forEach(elementName =>{
+                          names.push(elementName.name)
+                      });
+                      res.status(200).send({redes: listar, name: names});/*Error front*/
+                      console.log(names)
+                  }
+                  
+                }
+              });  
         }
     });
 }
