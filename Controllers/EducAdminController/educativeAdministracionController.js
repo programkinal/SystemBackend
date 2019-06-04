@@ -384,6 +384,11 @@ function saveRedes(req,res){
         res.status(200).send({message:'Debes de llenar todos los campos'});
     }
 }
+function updateRedes(req,res){
+    var params = req.body;
+    var redesId = req.params.id;
+    
+}
 function listRedes(req, res){
     var idName = [];
     var names = [];
