@@ -34,5 +34,7 @@ api.get('/searchInstructor', educativeAdministracionController.searchInstructor)
 /**---------------------------------------------------------REDES ACADEMICAS------------------------------------------------------------------- */
 api.post('/saveRedes', educativeAdministracionController.saveRedes);
 api.get('/listRedes', educativeAdministracionController.listRedes);
-
+api.put('/updateRedes/:id', educativeAdministracionController.updateRedes);
+api.get('/BuscarRedes/:id', educativeAdministracionController.buscarRedes);
+api.put('/deleteRedes/:id',educativeAdministracionController.deleteRedes);
 module.exports = api

@@ -386,8 +386,34 @@ function saveRedes(req,res){
 }
 function updateRedes(req,res){
     var params = req.body;
-    var redesId = req.params.id;
-    
+    var id = req.params.id;
+    Redes.findByIdAndUpdate(id,params,{new: true}, (err,actualizando)=>{
+        if(err){
+            res.status(200).send({message: 'No se pudo actualizar'});
+        }else{
+            res.status(200).send({actualizado: actualizando});
+        }
+    })
+}
+function deleteRedes(req,res){
+    var id = req.params.id;
+    Redes.findByIdAndDelete(id,(err,eliminando)=>{
+        if(err){
+            res.status(200).send({message: 'No se pudo eliminar'});
+        }else{
+            res.status(200).send({Elimar: eliminando});
+        }
+    })
+}
+function buscarRedes(req,res){
+    var id = req.params.id;
+    Redes.findById({_id: id},(err, buscando)=>{
+        if(err){
+            res.status(200).send({message: 'No se encontro'});
+        }else{
+            res.status(200).send({buscado: buscando});
+        }
+    })
 }
 function listRedes(req, res){
     var idName = [];
@@ -445,5 +471,8 @@ module.exports = {
     pruebaInstructor,
     searchInstructor,
     saveRedes,
-    listRedes
+    listRedes,
+    updateRedes,
+    buscarRedes,
+    deleteRedes
 }
