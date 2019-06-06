@@ -29,7 +29,8 @@ api.post('/Search-Course', educativeAdministracionController.searchCourse);
 /**---------------------------------------------------------INSTRUCTOR------------------------------------------------------------------- */
 api.get('/PruebaInstructor', educativeAdministracionController.pruebaInstructor);
 api.post('/saveInstructor', educativeAdministracionController.addInstructor);
-api.get('/listInstructor', educativeAdministracionController.listInstructor);
+api.post('/listInstructor', educativeAdministracionController.listInstructor);
+api.get('/listPerson', educativeAdministracionController.listPerson);
 api.put('/updateInstructor/:id', educativeAdministracionController.updateInstructor);
 api.put('/deleteInstructor/:id', educativeAdministracionController.deleteInstructor);
 api.post('/searchInstructor/:id', educativeAdministracionController.searchInstructor);
