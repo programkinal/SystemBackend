@@ -323,22 +323,61 @@ function addInstructor(req,res){
             }
         })
     }else{
-        res.status(500).send({message: 'Llene todos los campos'})
+        res.status(200).send({message: 'Llene todos los campos'});
     }
 }
 
-function searchInstructor(req, res){
- 
-
+function listInstructor(req, res){
     Instructor.find({}, (err, instructors)=>{
         if(err){
             res.status(404).send({message: 'error al listar'});
         }else{
             res.status(200).send({instructor: instructors});
         }
-    })
+    });
 }
 
+function searchInstructor(req, res){
+    var instructorId = req.params.id;
+
+    Instructor.findOne({_id: instructorId}, (err, instructor) => {
+        if(err){
+            res.status(404).send({message: 'error al buscar'});
+        }else{
+            res.status(200).send({instructor: instructor});
+        }
+    });
+}
+
+function updateInstructor(req, res){
+    var instructorId = req.params.id;
+    var params = req.body;
+
+    Instructor.findByIdAndUpdate(instructorId, params, {new:true}, (err, instructorUpdate) => {
+        if(err){
+            res.status(500).send({
+            message: 'Error al acutalizar'});
+        }else{
+            if(!instructorUpdate){
+                res.status(404).send({message: 'No se ha podido actualizar'});
+            }else{
+                res.status(200).send({instructor: instructorUpdate});
+            }
+        }
+    });
+}
+
+function deleteInstructor(req, res){
+    var instructorId = req.params.id;
+
+    Instructor.findByIdAndRemove(instructorId, (err, instructorDelete) => {
+        if(err){
+            res.status(500).send({message: 'Error al eliminar'});
+        }else{
+            res.status(200).send({message: 'Se elimino correctamente'});
+        }
+    });
+}
 /*------------------------------------------------Redes De estudio-------------------------------------------------------------------------*/ 
 function saveRedes(req,res){
     var params = req.body;
@@ -417,6 +456,9 @@ module.exports = {
     searchCourse,
     addInstructor,
     pruebaInstructor,
+    listInstructor,
+    updateInstructor,
+    deleteInstructor,
     searchInstructor,
     saveRedes,
     listRedes
