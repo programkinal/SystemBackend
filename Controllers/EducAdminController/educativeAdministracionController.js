@@ -3,8 +3,9 @@
 var AcademicUnits = require('../../models/academicUnits');
 var EducationalCareers = require('../../models/educationalCareers');
 var Course = require('../../models/course');
-var Instructor = require('../../models/instructores')
-var Redes = require('../../models/Redes')
+var Instructor = require('../../models/instructores');
+var Redes = require('../../models/Redes');
+var Person = require('../../models/person');
 
 function addAcademicUnits(req,res){
     var params = req.body;
@@ -328,11 +329,25 @@ function addInstructor(req,res){
 }
 
 function listInstructor(req, res){
+    var ids = req.body.params;
+
+    
+
     Instructor.find({}, (err, instructors)=>{
         if(err){
             res.status(404).send({message: 'error al listar'});
         }else{
             res.status(200).send({instructor: instructors});
+        }
+    });
+}
+
+function listPerson(req, res){
+    Person.find({}, (err, persons)=>{
+        if(err){
+            res.status(404).send({message: 'error al listar'});
+        }else{
+            res.status(200).send({persons: persons});
         }
     });
 }
@@ -457,6 +472,7 @@ module.exports = {
     addInstructor,
     pruebaInstructor,
     listInstructor,
+    listPerson,
     updateInstructor,
     deleteInstructor,
     searchInstructor,
