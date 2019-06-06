@@ -509,8 +509,24 @@ function saveAssignment(req,res){
         assignment.section = params.section;
         assignment.course = params.course;
         assignment.instructor = params.instructor;
-
         
+       Assignment.findOne({workingDay: params.workingDay, career: params.career, course: course, instructor: params.instructor},(err,buscando)=>{
+           if(err){
+               res.status(200).send({message: 'Error al buscar'});
+           }else{
+               if(!buscando){
+                assignment.save((err, guardando)=>{
+                    if(err){
+                        res.status(200).send({message: 'Error al guardar'});
+                    }else{
+                        res.status(200).send({Guardado: guardando });
+                    }
+                })
+               }else{
+                   res.status(200).send({message: 'La Asignatura ya fue registrada'});
+               }
+           }
+       })
     }
 }
 
@@ -542,5 +558,6 @@ module.exports = {
     listRedes,
     updateRedes,
     buscarRedes,
-    deleteRedes
+    deleteRedes,
+    saveAssignment
 }

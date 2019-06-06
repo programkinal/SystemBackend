@@ -41,4 +41,9 @@ api.get('/listRedes', educativeAdministracionController.listRedes);
 api.put('/updateRedes/:id', educativeAdministracionController.updateRedes);
 api.get('/BuscarRedes/:id', educativeAdministracionController.buscarRedes);
 api.put('/deleteRedes/:id',educativeAdministracionController.deleteRedes);
+
+
+/**-----------------------------------------------------Assignameten y Seccion-------------------------------------------------------- */
+api.post('/saveRedes', educativeAdministracionController.saveAssignment);
+
 module.exports = api
