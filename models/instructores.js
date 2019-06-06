@@ -9,4 +9,4 @@ var instructorSchema = Schema({
     Person: String,
 });
 
-module.exports = mongoose.model('instructor', instructorSchema);
+module.exports = mongoose.model('Instructor', instructorSchema);

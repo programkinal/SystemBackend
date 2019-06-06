@@ -5,6 +5,7 @@ var EducationalCareers = require('../../models/educationalCareers');
 var Course = require('../../models/course');
 var Instructor = require('../../models/instructores')
 var Redes = require('../../models/Redes')
+var Assignment = require('../../models/assignment')
 
 function addAcademicUnits(req,res){
     var params = req.body;
@@ -445,10 +446,20 @@ function listRedes(req, res){
         }
     });
 }
+/**-------------------------------------------------Asignación por jornada y sección---------------------------------------------------------------------------- */
+function saveAssignment(req,res){
+    var params = req.body;
+    var assignment = new Assignment()
+    if(params.workingDay && params.section && params.course && params.instructor){
+        assignment.workingDay = params.workingDay;
+        assignment.career = params.career;
+        assignment.section = params.section;
+        assignment.course = params.course;
+        assignment.instructor = params.instructor;
 
-
-
-
+        
+    }
+}
 
 
 
