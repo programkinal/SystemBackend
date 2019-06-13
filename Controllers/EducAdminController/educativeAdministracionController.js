@@ -6,6 +6,8 @@ var Course = require('../../models/course');
 var Instructor = require('../../models/instructores');
 var Redes = require('../../models/Redes');
 var Person = require('../../models/person');
+var Assignment = require('../../models/assignment')
+var mongoose = require('mongoose')
 
 function addAcademicUnits(req,res){
     var params = req.body;
@@ -194,7 +196,7 @@ function saveCourse(req, res){
         course.code = params.code.toUpperCase();
         course.name = params.name.toUpperCase();
         course.description = params.description.toUpperCase();
-        
+
         Course.findOne({name: params.name},(err,buscandoNombre)=>{
             if(err){
                 res.status(500).send({message: 'Ocurrio un error'});
@@ -306,7 +308,7 @@ function pruebaInstructor(req,res){
 function addInstructor(req,res){
     var params = req.body;
     var instructor = new Instructor()
-    
+
     if(params.code && params.profesion){
         instructor.code = params.code.toUpperCase();
         instructor.profesion = params.profesion.toUpperCase();
@@ -331,7 +333,7 @@ function addInstructor(req,res){
 function listInstructor(req, res){
     var ids = req.body.params;
 
-    
+
 
     Instructor.find({}, (err, instructors)=>{
         if(err){
@@ -393,7 +395,7 @@ function deleteInstructor(req, res){
         }
     });
 }
-/*------------------------------------------------Redes De estudio-------------------------------------------------------------------------*/ 
+/*------------------------------------------------Redes De estudio-------------------------------------------------------------------------*/
 function saveRedes(req,res){
     var params = req.body;
     var redes = new Redes();
@@ -427,13 +429,13 @@ function saveRedes(req,res){
                             }
                         })
                        }
-                       
-                   }                   
+
+                   }
                }else{
                    res.status(200).send({message: 'La red de estudio ya esta registrada'});
                }
             }
-        }); 
+        });
     }else{
         res.status(200).send({message:'Debes de llenar todos los campos'});
     }
@@ -493,9 +495,9 @@ function listRedes(req, res){
                       res.status(200).send({redes: listar, name: names});/*Error front*/
                       console.log(names)
                   }
-                  
+
                 }
-              });  
+              });
         }
     });
 }
@@ -509,8 +511,8 @@ function saveAssignment(req,res){
         assignment.section = params.section;
         assignment.course = params.course;
         assignment.instructor = params.instructor;
-        
-       Assignment.findOne({workingDay: params.workingDay, career: params.career, course: course, instructor: params.instructor},(err,buscando)=>{
+
+       Assignment.findOne({workingDay: params.workingDay, career: params.career, course: params.course, instructor: params.instructor},(err,buscando)=>{
            if(err){
                res.status(200).send({message: 'Error al buscar'});
            }else{
@@ -527,9 +529,102 @@ function saveAssignment(req,res){
                }
            }
        })
+    }else{
+        res.status(200).send({message: 'Debes de llenar todos los campos'});
     }
 }
+function listInstructorAssignment(req, res){
+    var personid = []
+    var personName = []
+    Instructor.find({}, (err, instructors)=>{
+        if(err){
+            res.status(404).send({message: 'error al listar'});
+        }else{
+            instructors.forEach(instructor => {
+                personid = instructor.Person
+            });
+            Person.find({_id: personid},(err,buscando)=>{
+                if(err){
+                    res.status(200).send({message: 'Error al buscar'});
+                }else{
+                   buscando.forEach(persona => {
+                        personName.push(persona)
+                   });
+                    res.status(200).send({instructor: instructors, persona: personName});
+                }
+            })
 
+
+        }
+    });
+}
+
+function reportAssigment(req,res){
+    var carrreras = [];
+    Assignment.find({},(err,listar)=>{
+        if(err){
+            res.status(200).send({message: 'Error al listar'})
+        }else{
+            EducationalCareers.populate(listar,{path: 'carrers'},(err, resultadoCarrer)=>{
+                
+            })
+            // for(let i = 0; i < listar.length; i++){
+            //     EducationalCareers.findOne({_id: listar[i].career}, (err, careers) => {
+            //         if(err){
+            //             res.status(200).send({message: 'Error al listar'})
+            //         }else{
+            //             carrreras.push(careers);
+            //         }
+            //     });
+
+            // }
+            console.log(carrreras)
+
+
+
+
+            
+            // EducationalCareers.aggregate([ {$lookup:{
+            //     from: "assignments",       // other table name
+            //     localField: "_id",   // name of users table field
+            //     foreignField: "career", // name of userinfo table field
+            //     as: "asignaciones"         // alias for userinfo table
+            // }}], (err, oh) => {
+            //     res.status(200).send({asignaciones: oh}).POPULATE('CAREER')
+            // })
+            
+
+
+            // console.log(listar)
+          /*  listar.forEach(el => {
+                EducationalCareers.find({_id: el.career}, (roman, ok) =>  {
+                    if(roman){
+                        console.log(roman)
+                    }else{
+
+                    }
+                })
+            })*/
+            // res.status(200).send({assignment: listar})
+            // listar.forEach(element => {
+            //     console.log(element.career)
+            // });
+
+        }
+    })
+}
+
+function reportAssigmentCareer(req,res){
+    var params = req.body
+    EducationalCareers.find({_id: params},(err,listar)=>{
+        if(err){
+            res.status(200).send({message: 'Error al listar'})
+        }else{
+            res.status(200).send({carreras: listar})
+
+        }
+    })
+}
 
 
 module.exports = {
@@ -559,5 +654,8 @@ module.exports = {
     updateRedes,
     buscarRedes,
     deleteRedes,
-    saveAssignment
+    saveAssignment,
+    listInstructorAssignment,
+    reportAssigment,
+    reportAssigmentCareer
 }

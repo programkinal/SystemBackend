@@ -29,7 +29,7 @@ api.post('/Search-Course', educativeAdministracionController.searchCourse);
 /**---------------------------------------------------------INSTRUCTOR------------------------------------------------------------------- */
 api.get('/PruebaInstructor', educativeAdministracionController.pruebaInstructor);
 api.post('/saveInstructor', educativeAdministracionController.addInstructor);
-api.post('/listInstructor', educativeAdministracionController.listInstructor);
+api.get('/listInstructor', educativeAdministracionController.listInstructor);
 api.get('/listPerson', educativeAdministracionController.listPerson);
 api.put('/updateInstructor/:id', educativeAdministracionController.updateInstructor);
 api.put('/deleteInstructor/:id', educativeAdministracionController.deleteInstructor);
@@ -44,6 +44,9 @@ api.put('/deleteRedes/:id',educativeAdministracionController.deleteRedes);
 
 
 /**-----------------------------------------------------Assignameten y Seccion-------------------------------------------------------- */
-api.post('/saveRedes', educativeAdministracionController.saveAssignment);
+api.post('/saveAssignment', educativeAdministracionController.saveAssignment);
+api.get('/List-Instructor-Assignment', educativeAdministracionController.listInstructorAssignment);
+api.get('/report-Assignment', educativeAdministracionController.reportAssigment);
+api.post('/report-Assignment-Career', educativeAdministracionController.reportAssigmentCareer);
 
 module.exports = api
