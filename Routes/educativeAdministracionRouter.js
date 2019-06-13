@@ -30,10 +30,23 @@ api.post('/Search-Course', educativeAdministracionController.searchCourse);
 api.get('/PruebaInstructor', educativeAdministracionController.pruebaInstructor);
 api.post('/saveInstructor', educativeAdministracionController.addInstructor);
 api.get('/listInstructor', educativeAdministracionController.listInstructor);
+api.get('/listPerson', educativeAdministracionController.listPerson);
 api.put('/updateInstructor/:id', educativeAdministracionController.updateInstructor);
+api.put('/deleteInstructor/:id', educativeAdministracionController.deleteInstructor);
+api.post('/searchInstructor/:id', educativeAdministracionController.searchInstructor);
 
 /**---------------------------------------------------------REDES ACADEMICAS------------------------------------------------------------------- */
 api.post('/saveRedes', educativeAdministracionController.saveRedes);
 api.get('/listRedes', educativeAdministracionController.listRedes);
+api.put('/updateRedes/:id', educativeAdministracionController.updateRedes);
+api.get('/BuscarRedes/:id', educativeAdministracionController.buscarRedes);
+api.put('/deleteRedes/:id',educativeAdministracionController.deleteRedes);
+
+
+/**-----------------------------------------------------Assignameten y Seccion-------------------------------------------------------- */
+api.post('/saveAssignment', educativeAdministracionController.saveAssignment);
+api.get('/List-Instructor-Assignment', educativeAdministracionController.listInstructorAssignment);
+api.get('/report-Assignment', educativeAdministracionController.reportAssigment);
+api.post('/report-Assignment-Career', educativeAdministracionController.reportAssigmentCareer);
 
 module.exports = api

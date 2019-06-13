@@ -3,8 +3,11 @@
 var AcademicUnits = require('../../models/academicUnits');
 var EducationalCareers = require('../../models/educationalCareers');
 var Course = require('../../models/course');
-var Instructor = require('../../models/instructores')
-var Redes = require('../../models/Redes')
+var Instructor = require('../../models/instructores');
+var Redes = require('../../models/Redes');
+var Person = require('../../models/person');
+var Assignment = require('../../models/assignment')
+var mongoose = require('mongoose')
 
 function addAcademicUnits(req,res){
     var params = req.body;
@@ -193,7 +196,7 @@ function saveCourse(req, res){
         course.code = params.code.toUpperCase();
         course.name = params.name.toUpperCase();
         course.description = params.description.toUpperCase();
-        
+
         Course.findOne({name: params.name},(err,buscandoNombre)=>{
             if(err){
                 res.status(500).send({message: 'Ocurrio un error'});
@@ -305,7 +308,7 @@ function pruebaInstructor(req,res){
 function addInstructor(req,res){
     var params = req.body;
     var instructor = new Instructor()
-    
+
     if(params.code && params.profesion){
         instructor.code = params.code.toUpperCase();
         instructor.profesion = params.profesion.toUpperCase();
@@ -323,11 +326,15 @@ function addInstructor(req,res){
             }
         })
     }else{
-        res.status(500).send({message: 'Llene todos los campos'})
+        res.status(200).send({message: 'Llene todos los campos'});
     }
 }
 
 function listInstructor(req, res){
+    var ids = req.body.params;
+
+
+
     Instructor.find({}, (err, instructors)=>{
         if(err){
             res.status(404).send({message: 'error al listar'});
@@ -337,17 +344,33 @@ function listInstructor(req, res){
     });
 }
 
-function searchInstructor(){
-    var search = req.params.search;
+function listPerson(req, res){
+    Person.find({}, (err, persons)=>{
+        if(err){
+            res.status(404).send({message: 'error al listar'});
+        }else{
+            res.status(200).send({persons: persons});
+        }
+    });
+}
 
-    Instructor.findOne()
+function searchInstructor(req, res){
+    var instructorId = req.params.id;
+
+    Instructor.findOne({_id: instructorId}, (err, instructor) => {
+        if(err){
+            res.status(404).send({message: 'error al buscar'});
+        }else{
+            res.status(200).send({instructor: instructor});
+        }
+    });
 }
 
 function updateInstructor(req, res){
     var instructorId = req.params.id;
-    var update = req.body;
+    var params = req.body;
 
-    Course.findByIdAndUpdate(instructorId, update, {new:true}, (err, instructorUpdate) => {
+    Instructor.findByIdAndUpdate(instructorId, params, {new:true}, (err, instructorUpdate) => {
         if(err){
             res.status(500).send({
             message: 'Error al acutalizar'});
@@ -361,23 +384,18 @@ function updateInstructor(req, res){
     });
 }
 
-function deleteCourse(req, res){
-    var courseId = req.params.id;
+function deleteInstructor(req, res){
+    var instructorId = req.params.id;
 
-    if(courseId != req.user.sub){
-        res.status(500).send({mnessage: 'No tienes permiso'});
-
-    }else{
-        Course.findByIdAndRemove(courseId, (err, courseDelete) => {
-            if(err){
-                res.status(500).send({message: 'Error al eliminar'});
-            }else{
-                res.status(200).send({message: 'Se elimino correctamente'});
-            }
-        });
-    }
+    Instructor.findByIdAndRemove(instructorId, (err, instructorDelete) => {
+        if(err){
+            res.status(500).send({message: 'Error al eliminar'});
+        }else{
+            res.status(200).send({message: 'Se elimino correctamente'});
+        }
+    });
 }
-/*------------------------------------------------Redes De estudio-------------------------------------------------------------------------*/ 
+/*------------------------------------------------Redes De estudio-------------------------------------------------------------------------*/
 function saveRedes(req,res){
     var params = req.body;
     var redes = new Redes();
@@ -411,31 +429,202 @@ function saveRedes(req,res){
                             }
                         })
                        }
-                       
-                   }                   
+
+                   }
                }else{
                    res.status(200).send({message: 'La red de estudio ya esta registrada'});
                }
             }
-        }); 
+        });
     }else{
         res.status(200).send({message:'Debes de llenar todos los campos'});
     }
 }
+function updateRedes(req,res){
+    var params = req.body;
+    var id = req.params.id;
+    Redes.findByIdAndUpdate(id,params,{new: true}, (err,actualizando)=>{
+        if(err){
+            res.status(200).send({message: 'No se pudo actualizar'});
+        }else{
+            res.status(200).send({actualizado: actualizando});
+        }
+    })
+}
+function deleteRedes(req,res){
+    var id = req.params.id;
+    Redes.findByIdAndDelete(id,(err,eliminando)=>{
+        if(err){
+            res.status(200).send({message: 'No se pudo eliminar'});
+        }else{
+            res.status(200).send({Elimar: eliminando});
+        }
+    })
+}
+function buscarRedes(req,res){
+    var id = req.params.id;
+    Redes.findById({_id: id},(err, buscando)=>{
+        if(err){
+            res.status(200).send({message: 'No se encontro'});
+        }else{
+            res.status(200).send({buscado: buscando});
+        }
+    })
+}
 function listRedes(req, res){
+    var idName = [];
+    var names = [];
     Redes.find({},(err,listar)=>{
         if(err){
             res.status(500).send({message: 'Ocurrio un error'});
         }else{
-            res.status(200).send({redes: listar});
+            listar.forEach(element => {
+                idName.push(element.career)
+            });
+
+            EducationalCareers.find({_id: idName}, (err, results)=>{
+                if(err){
+                  res.status(404).send({message: 'Error general'})
+                }else{
+                  if(!results){
+                    res.status(200).send({message: 'No hay registros'});
+                  }else{
+                      results.forEach(elementName =>{
+                          names.push(elementName.name)
+                      });
+                      res.status(200).send({redes: listar, name: names});/*Error front*/
+                      console.log(names)
+                  }
+
+                }
+              });
+        }
+    });
+}
+/**-------------------------------------------------Asignación por jornada y sección---------------------------------------------------------------------------- */
+function saveAssignment(req,res){
+    var params = req.body;
+    var assignment = new Assignment()
+    if(params.workingDay && params.section && params.course && params.instructor){
+        assignment.workingDay = params.workingDay;
+        assignment.career = params.career;
+        assignment.section = params.section;
+        assignment.course = params.course;
+        assignment.instructor = params.instructor;
+
+       Assignment.findOne({workingDay: params.workingDay, career: params.career, course: params.course, instructor: params.instructor},(err,buscando)=>{
+           if(err){
+               res.status(200).send({message: 'Error al buscar'});
+           }else{
+               if(!buscando){
+                assignment.save((err, guardando)=>{
+                    if(err){
+                        res.status(200).send({message: 'Error al guardar'});
+                    }else{
+                        res.status(200).send({Guardado: guardando });
+                    }
+                })
+               }else{
+                   res.status(200).send({message: 'La Asignatura ya fue registrada'});
+               }
+           }
+       })
+    }else{
+        res.status(200).send({message: 'Debes de llenar todos los campos'});
+    }
+}
+function listInstructorAssignment(req, res){
+    var personid = []
+    var personName = []
+    Instructor.find({}, (err, instructors)=>{
+        if(err){
+            res.status(404).send({message: 'error al listar'});
+        }else{
+            instructors.forEach(instructor => {
+                personid = instructor.Person
+            });
+            Person.find({_id: personid},(err,buscando)=>{
+                if(err){
+                    res.status(200).send({message: 'Error al buscar'});
+                }else{
+                   buscando.forEach(persona => {
+                        personName.push(persona)
+                   });
+                    res.status(200).send({instructor: instructors, persona: personName});
+                }
+            })
+
+
         }
     });
 }
 
+function reportAssigment(req,res){
+    var carrreras = [];
+    Assignment.find({},(err,listar)=>{
+        if(err){
+            res.status(200).send({message: 'Error al listar'})
+        }else{
+            EducationalCareers.populate(listar,{path: 'carrers'},(err, resultadoCarrer)=>{
+                
+            })
+            // for(let i = 0; i < listar.length; i++){
+            //     EducationalCareers.findOne({_id: listar[i].career}, (err, careers) => {
+            //         if(err){
+            //             res.status(200).send({message: 'Error al listar'})
+            //         }else{
+            //             carrreras.push(careers);
+            //         }
+            //     });
+
+            // }
+            console.log(carrreras)
 
 
 
 
+            
+            // EducationalCareers.aggregate([ {$lookup:{
+            //     from: "assignments",       // other table name
+            //     localField: "_id",   // name of users table field
+            //     foreignField: "career", // name of userinfo table field
+            //     as: "asignaciones"         // alias for userinfo table
+            // }}], (err, oh) => {
+            //     res.status(200).send({asignaciones: oh}).POPULATE('CAREER')
+            // })
+            
+
+
+            // console.log(listar)
+          /*  listar.forEach(el => {
+                EducationalCareers.find({_id: el.career}, (roman, ok) =>  {
+                    if(roman){
+                        console.log(roman)
+                    }else{
+
+                    }
+                })
+            })*/
+            // res.status(200).send({assignment: listar})
+            // listar.forEach(element => {
+            //     console.log(element.career)
+            // });
+
+        }
+    })
+}
+
+function reportAssigmentCareer(req,res){
+    var params = req.body
+    EducationalCareers.find({_id: params},(err,listar)=>{
+        if(err){
+            res.status(200).send({message: 'Error al listar'})
+        }else{
+            res.status(200).send({carreras: listar})
+
+        }
+    })
+}
 
 
 module.exports = {
@@ -456,7 +645,17 @@ module.exports = {
     addInstructor,
     pruebaInstructor,
     listInstructor,
+    listPerson,
     updateInstructor,
+    deleteInstructor,
+    searchInstructor,
     saveRedes,
-    listRedes
+    listRedes,
+    updateRedes,
+    buscarRedes,
+    deleteRedes,
+    saveAssignment,
+    listInstructorAssignment,
+    reportAssigment,
+    reportAssigmentCareer
 }
