@@ -472,32 +472,17 @@ function buscarRedes(req,res){
     })
 }
 function listRedes(req, res){
-    var idName = [];
-    var names = [];
     Redes.find({},(err,listar)=>{
         if(err){
             res.status(500).send({message: 'Ocurrio un error'});
         }else{
-            listar.forEach(element => {
-                idName.push(element.career)
-            });
-
-            EducationalCareers.find({_id: idName}, (err, results)=>{
+            EducationalCareers.populate(listar,{path: 'career'},(err, listarCareer)=>{
                 if(err){
-                  res.status(404).send({message: 'Error general'})
+                    res.status(200).send({message: 'Error al listar'});
                 }else{
-                  if(!results){
-                    res.status(200).send({message: 'No hay registros'});
-                  }else{
-                      results.forEach(elementName =>{
-                          names.push(elementName.name)
-                      });
-                      res.status(200).send({redes: listar, name: names});/*Error front*/
-                      console.log(names)
-                  }
-
+                    res.status(200).send({redes: listarCareer})
                 }
-              });
+            })
         }
     });
 }
@@ -565,8 +550,17 @@ function reportAssigment(req,res){
         if(err){
             res.status(200).send({message: 'Error al listar'})
         }else{
-            EducationalCareers.populate(listar,{path: 'carrers'},(err, resultadoCarrer)=>{
-                
+            EducationalCareers.populate(listar,{path: 'career'},(err, resultadoCarrer)=>{
+                Person.populate(resultadoCarrer,{path: 'instructor'},(err,resultadoInstructor)=>{
+                    Course.populate(resultadoInstructor,{path: 'course'},(err,resultadoCourse)=>{
+                        if(err){
+                            res.status(200).send({message: 'Error al listar'});
+                        }else{
+                            res.status(200).send({asignaciones: resultadoCourse});
+                            console.log(resultadoCourse)
+                        }
+                    })
+                })
             })
             // for(let i = 0; i < listar.length; i++){
             //     EducationalCareers.findOne({_id: listar[i].career}, (err, careers) => {
