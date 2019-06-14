@@ -5,9 +5,11 @@ var Schema = mongoose.Schema;
 
 var inscriptionSchema = Schema({
     person: {type: Schema.ObjectId, ref: 'Person'},
-    unitAcademy: [],
-    jornada: {type: Schema.ObjectId, ref: 'Jornada'},
-    grade: {type: Schema.ObjectId, ref: 'Grade'},
+    unitAcademy: String,
+    career: String,
+    section: String,
+    jornada: String,
+    grade: String,
     share: Number
 });
 

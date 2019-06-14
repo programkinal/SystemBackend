@@ -14,11 +14,15 @@ function saveInscription(req, res){
     inscription.person = params.person,
     inscription.jornada = params.jornada,
     inscription.grade = params.grade,
-    inscription.share = params.share
+    inscription.share = params.share,
+    inscription.unitAcademy = params.unitAcademy,
+    inscription.career = params.career,
+    inscription.section = params.section
 
-    inscription.save({unitAcademy: {unitAcademy: params.unitAcademy, career: params.career}}, (err, inscrip)=>{
+    inscription.save((err, inscrip)=>{
         if(err){
             res.status(500).send({message: 'Error al guardar'});
+            console.log(err)
         }else{
             if(!inscrip){
                 res.status(404).send({message: 'No se ha podido guardar'});
