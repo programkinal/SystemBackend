@@ -572,7 +572,6 @@ function reportAssigment(req,res){
             //     });
 
             // }
-            console.log(carrreras)
 
 
 
