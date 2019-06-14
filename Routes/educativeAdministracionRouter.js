@@ -42,11 +42,14 @@ api.put('/updateRedes/:id', educativeAdministracionController.updateRedes);
 api.get('/BuscarRedes/:id', educativeAdministracionController.buscarRedes);
 api.put('/deleteRedes/:id',educativeAdministracionController.deleteRedes);
 
-
+/**----------------------------------------------------Asignacion por instructor a curso---------------------------- */
+api.post('/saveAssignmentInstructor-Course', educativeAdministracionController.saveAssignmentInstructor);
+api.get('/List-Assignment-Instructor-Course', educativeAdministracionController.reportAssigmentInstructorCourse);
 /**-----------------------------------------------------Assignameten y Seccion-------------------------------------------------------- */
 api.post('/saveAssignment', educativeAdministracionController.saveAssignment);
 api.get('/List-Instructor-Assignment', educativeAdministracionController.listInstructorAssignment);
 api.get('/report-Assignment', educativeAdministracionController.reportAssigment);
 api.post('/report-Assignment-Career', educativeAdministracionController.reportAssigmentCareer);
+api.get('/report-Assignment-Grader', educativeAdministracionController.reportAssigmentGrader);
 
 module.exports = api
