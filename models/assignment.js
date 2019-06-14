@@ -7,7 +7,7 @@ var assignmentSchema = Schema({
     workingDay: String,
     career: {type: Schema.ObjectId, ref: 'Career'},
     section: String,
-    course: {type: Schema.ObjectId, ref: 'Course'},
+    course: [{type: Schema.ObjectId, ref: 'Course'}],
     instructor: {type: Schema.ObjectId, ref: 'Instructor'},
     grader: String
 

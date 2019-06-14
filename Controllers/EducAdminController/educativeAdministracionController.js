@@ -9,6 +9,8 @@ var Person = require('../../models/person');
 var Assignment = require('../../models/assignment')
 var AssignmentInstructorCourse = require('../../models/assignmentInstructorCourse');
 var Grader = require('../../models/grader');
+var Jornada = require('../../models/jornada');
+var Section = require('../../models/section');
 var mongoose = require('mongoose')
 
 function addAcademicUnits(req,res){
@@ -540,61 +542,56 @@ function reportAssigmentInstructorCourse(req,res){
 function saveAssignment(req,res){
     var params = req.body;
     var assignment = new Assignment()
-    if(params.career == '' && params.grader == '' && params.course != ''){
-        assignment.workingDay = params.workingDay.toUpperCase();;
-        assignment.career = params.career;
-        assignment.section = params.section.toUpperCase();;
-        assignment.grader = params.grader.toUpperCase();;
+    
+    if(params.career != '' && params.grader != ''){
+        assignment.workingDay = params.workingDay;
+        assignment.section = params.section;
         assignment.course = params.course;
-        Assignment.findOne({workingDay: params.workingDay, section: params.section,course: params.course},(err,Noigualess)=>{
+        assignment.career = params.career;
+        assignment.grader = params.grader;
+        Assignment.findOne({section: params.section, workingDay: params.workingDay, career: params.career, grader: params.grader},(err,buscando)=>{
             if(err){
-                res.status(200).send({message: 'Error al intentar buscar'});
+                res.status(200).send({message: 'Error al buscar'});
             }else{
-                if(!Noigualess){
-                    assignment.save((err,guardando)=>{
+                if(!buscando){
+                    assignment.save((err, guardado)=>{
                         if(err){
                             res.status(200).send({message: 'Error al guardar'});
                         }else{
-                            res.status(200).send({Guardado: guardando });
+                            res.status(200).send({Guardado: guardado});
                         }
                     })
+                }else{
+                    res.status(200).send({message: 'La Asignatura ya fue registrada'})
+                }
+            }
+        })
+    }else if(params.career == '' && params.grader == '' && params.course != ''){
+        assignment.workingDay = params.workingDay;
+        assignment.section = params.section;
+        assignment.course = params.course;
+        // assignment.career = params.career;
+        // assignment.grader = params.grader;
+        Assignment.findOne({section: params.section, workingDay: params.workingDay, course: params.course},(err,buscando)=>{
+            if(err){
+                res.status(200).send({message: 'Error al buscar'});
+            }else{
+                if(!buscando){
+                    assignment.save((err, guardado)=>{
+                        if(err){
+                            res.status(200).send({message: 'Error al guardar'});
+                            console.log('Error de la segunda busqeuda' + err)
+                        }else{
+                            res.status(200).send({Guardado: guardado});
+                        }
+                    })
+                }else{
+                    res.status(200).send({message: 'La Asignatura ya fue registrada'})
                 }
             }
         })
     }else{
-        res.status(200).send({message: 'Es necesario el curso'});
-    }if (params.career != '' && params.grader != '') {
-        Assignment.findOne({workingDay: params.workingDay,career: params.career,grader: params.grader },(err,Noigualess)=>{
-            if(err){
-                res.status(200).send({message: 'Error al intentar buscar'});
-            }else{
-                if(!Noigualess){
-                    assignment.save((err,guardando)=>{
-                        if(err){
-                            res.status(200).send({message: 'Error al guardar'});
-                        }else{
-                            res.status(200).send({Guardado: guardando });
-                        }
-                    })
-                }
-            }
-        })
-    } else {
-        Assignment.findOne({workingDay: params.workingDay,career: params.career, grader: params.grader,course: params.course, },(err,Noigualess)=>{
-            if(err){
-                res.status(200).send({message: 'Error al intentar buscar'});
-            }else{
-                if(!Noigualess){
-                    assignment.save((err,guardando)=>{
-                        if(err){
-                            res.status(200).send({message: 'Error al guardar'});
-                        }else{
-                            res.status(200).send({Guardado: guardando });
-                        }
-                    })
-                }
-            }
-        })
+        res.status(200).send({message: 'El curso debe ir obligatoriamente'});
     }
     
 }
@@ -663,6 +660,25 @@ function reportAssigmentGrader(req,res){
         }
     })
 }
+function reportAssigmentWorkindDay(req,res){
+    Jornada.find({},(err,workingDay)=>{
+        if(err){
+            res.status(200).send({message: 'Error alistar'});
+        }else{
+            res.status(200).send({jornada: workingDay})
+        }
+    })
+}
+function reportAssigmentSection(req,res){
+    Section.find({},(err,listara)=>{
+        if(err){
+            res.status(200).send({message: 'No se pudo listar'});
+        }else{
+            res.status(200).send({section: listara});
+            console.log(listara)
+        }
+    })
+}
 
 
 module.exports = {
@@ -698,5 +714,7 @@ module.exports = {
     listInstructorAssignment,
     reportAssigment,
     reportAssigmentCareer,
-    reportAssigmentGrader
+    reportAssigmentGrader,
+    reportAssigmentSection,
+    reportAssigmentWorkindDay
 }

@@ -51,5 +51,7 @@ api.get('/List-Instructor-Assignment', educativeAdministracionController.listIns
 api.get('/report-Assignment', educativeAdministracionController.reportAssigment);
 api.post('/report-Assignment-Career', educativeAdministracionController.reportAssigmentCareer);
 api.get('/report-Assignment-Grader', educativeAdministracionController.reportAssigmentGrader);
+api.get('/List-Assignment-Jornada', educativeAdministracionController.reportAssigmentWorkindDay);
+api.get('/List-Assignment-Section', educativeAdministracionController.reportAssigmentSection);
 
 module.exports = api
