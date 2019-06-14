@@ -7,6 +7,8 @@ var Instructor = require('../../models/instructores');
 var Redes = require('../../models/Redes');
 var Person = require('../../models/person');
 var Assignment = require('../../models/assignment')
+var AssignmentInstructorCourse = require('../../models/assignmentInstructorCourse');
+var Grader = require('../../models/grader');
 var mongoose = require('mongoose')
 
 function addAcademicUnits(req,res){
@@ -309,7 +311,7 @@ function addInstructor(req,res){
     var params = req.body;
     var instructor = new Instructor()
 
-    if(params.code && params.profesion){
+    if(params.code && params.profesion && params.Person){
         instructor.code = params.code.toUpperCase();
         instructor.profesion = params.profesion.toUpperCase();
         instructor.Person = params.Person
@@ -331,15 +333,17 @@ function addInstructor(req,res){
 }
 
 function listInstructor(req, res){
-    var ids = req.body.params;
-
-
-
     Instructor.find({}, (err, instructors)=>{
         if(err){
             res.status(404).send({message: 'error al listar'});
         }else{
-            res.status(200).send({instructor: instructors});
+            Person.populate(instructors,{path: 'Person'},(err, instructores)=>{
+                if(err){
+                    res.status(200).send({message: 'Erro al listar'});
+                }else{
+                    res.status(200).send({instructor: instructores});
+                }
+            })
         }
     });
 }
@@ -361,7 +365,10 @@ function searchInstructor(req, res){
         if(err){
             res.status(404).send({message: 'error al buscar'});
         }else{
-            res.status(200).send({instructor: instructor});
+            Person.populate(instructor,{path: 'Person'},(err,instructores)=>{
+                res.status(200).send({instructor: instructores});
+            })
+            
         }
     });
 }
@@ -486,37 +493,110 @@ function listRedes(req, res){
         }
     });
 }
+/**-------------------------------------------------Asignacion del instructor al curso------------------------------------------------------------------------------------- */
+function saveAssignmentInstructor(req,res){
+    var params = req.body;
+    var assignmentInstructor = new AssignmentInstructorCourse();
+
+    if(params.course && params.instructor){
+        assignmentInstructor.instructor = params.instructor;
+        assignmentInstructor.course = params.course;
+        
+        AssignmentInstructorCourse.findOne({instructor: params.instructor, course: params.course},(err,buscandoNoiguales)=>{
+            if(err){
+                res.status(200).send({message: 'Error al busscar'});
+            }else{
+                if(!buscandoNoiguales){
+                    assignmentInstructor.save((err, guardando)=>{
+                        if(err){
+                            res.status(200).send({message: 'Error al guardar'});
+                        }else{
+                            res.status(200).send({guardado: guardando});
+                        }
+                    })
+                }else{
+                    res.status(200).send({message: 'El registro ya esta en la base de datos'})
+                }
+            }
+        })
+    }else{
+        res.status(200).send({message: 'Debes de llenar todos los campos'})
+    }
+}
+function reportAssigmentInstructorCourse(req,res){
+    AssignmentInstructorCourse.find({},(err,listar)=>{
+        Person.populate(listar,{path: 'instructor'},(err,listarInstructor)=>{
+            Course.populate(listarInstructor,{path: 'course'},(err,listarCourse)=>{
+                if(err){
+                    res.status(200).send({message: 'Error en la busqueda'});
+                }else{
+                    res.status(200).send({Assignment: listarCourse});
+                }
+            })
+        })
+    })
+}
 /**-------------------------------------------------Asignación por jornada y sección---------------------------------------------------------------------------- */
 function saveAssignment(req,res){
     var params = req.body;
     var assignment = new Assignment()
-    if(params.workingDay && params.section && params.course && params.instructor){
-        assignment.workingDay = params.workingDay;
+    if(params.career == '' && params.grader == '' && params.course != ''){
+        assignment.workingDay = params.workingDay.toUpperCase();;
         assignment.career = params.career;
-        assignment.section = params.section;
+        assignment.section = params.section.toUpperCase();;
+        assignment.grader = params.grader.toUpperCase();;
         assignment.course = params.course;
-        assignment.instructor = params.instructor;
-
-       Assignment.findOne({workingDay: params.workingDay, career: params.career, course: params.course, instructor: params.instructor},(err,buscando)=>{
-           if(err){
-               res.status(200).send({message: 'Error al buscar'});
-           }else{
-               if(!buscando){
-                assignment.save((err, guardando)=>{
-                    if(err){
-                        res.status(200).send({message: 'Error al guardar'});
-                    }else{
-                        res.status(200).send({Guardado: guardando });
-                    }
-                })
-               }else{
-                   res.status(200).send({message: 'La Asignatura ya fue registrada'});
-               }
-           }
-       })
+        Assignment.findOne({workingDay: params.workingDay, section: params.section,course: params.course},(err,Noigualess)=>{
+            if(err){
+                res.status(200).send({message: 'Error al intentar buscar'});
+            }else{
+                if(!Noigualess){
+                    assignment.save((err,guardando)=>{
+                        if(err){
+                            res.status(200).send({message: 'Error al guardar'});
+                        }else{
+                            res.status(200).send({Guardado: guardando });
+                        }
+                    })
+                }
+            }
+        })
     }else{
-        res.status(200).send({message: 'Debes de llenar todos los campos'});
+        res.status(200).send({message: 'Es necesario el curso'});
+    }if (params.career != '' && params.grader != '') {
+        Assignment.findOne({workingDay: params.workingDay,career: params.career,grader: params.grader },(err,Noigualess)=>{
+            if(err){
+                res.status(200).send({message: 'Error al intentar buscar'});
+            }else{
+                if(!Noigualess){
+                    assignment.save((err,guardando)=>{
+                        if(err){
+                            res.status(200).send({message: 'Error al guardar'});
+                        }else{
+                            res.status(200).send({Guardado: guardando });
+                        }
+                    })
+                }
+            }
+        })
+    } else {
+        Assignment.findOne({workingDay: params.workingDay,career: params.career, grader: params.grader,course: params.course, },(err,Noigualess)=>{
+            if(err){
+                res.status(200).send({message: 'Error al intentar buscar'});
+            }else{
+                if(!Noigualess){
+                    assignment.save((err,guardando)=>{
+                        if(err){
+                            res.status(200).send({message: 'Error al guardar'});
+                        }else{
+                            res.status(200).send({Guardado: guardando });
+                        }
+                    })
+                }
+            }
+        })
     }
+    
 }
 function listInstructorAssignment(req, res){
     var personid = []
@@ -525,17 +605,12 @@ function listInstructorAssignment(req, res){
         if(err){
             res.status(404).send({message: 'error al listar'});
         }else{
-            instructors.forEach(instructor => {
-                personid = instructor.Person
-            });
-            Person.find({_id: personid},(err,buscando)=>{
+            Person.populate(instructors,{path: 'Person'},(err,listarInstructor)=>{
                 if(err){
-                    res.status(200).send({message: 'Error al buscar'});
+                    res.status(200).send({message: 'Error al listar'});
                 }else{
-                   buscando.forEach(persona => {
-                        personName.push(persona)
-                   });
-                    res.status(200).send({instructor: instructors, persona: personName});
+                    res.status(200).send({persona: listarInstructor})
+                    console.log(listarInstructor)
                 }
             })
 
@@ -562,59 +637,29 @@ function reportAssigment(req,res){
                     })
                 })
             })
-            // for(let i = 0; i < listar.length; i++){
-            //     EducationalCareers.findOne({_id: listar[i].career}, (err, careers) => {
-            //         if(err){
-            //             res.status(200).send({message: 'Error al listar'})
-            //         }else{
-            //             carrreras.push(careers);
-            //         }
-            //     });
-
-            // }
-
-
-
-
-            
-            // EducationalCareers.aggregate([ {$lookup:{
-            //     from: "assignments",       // other table name
-            //     localField: "_id",   // name of users table field
-            //     foreignField: "career", // name of userinfo table field
-            //     as: "asignaciones"         // alias for userinfo table
-            // }}], (err, oh) => {
-            //     res.status(200).send({asignaciones: oh}).POPULATE('CAREER')
-            // })
-            
-
-
-            // console.log(listar)
-          /*  listar.forEach(el => {
-                EducationalCareers.find({_id: el.career}, (roman, ok) =>  {
-                    if(roman){
-                        console.log(roman)
-                    }else{
-
-                    }
-                })
-            })*/
-            // res.status(200).send({assignment: listar})
-            // listar.forEach(element => {
-            //     console.log(element.career)
-            // });
-
+            console.log(carrreras)
         }
     })
 }
-
+/**no adapta a nada */
 function reportAssigmentCareer(req,res){
-    var params = req.body
     EducationalCareers.find({_id: params},(err,listar)=>{
         if(err){
             res.status(200).send({message: 'Error al listar'})
         }else{
             res.status(200).send({carreras: listar})
 
+        }
+    })
+}
+/**Llamar grados de la base de datos */
+function reportAssigmentGrader(req,res){
+    Grader.find({},(err,listar)=>{
+        if(err){
+            res.status(200).send({message: 'Error al listar'});
+        }else{
+            res.status(200).send({grader: listar})
+            console.log(listar)
         }
     })
 }
@@ -647,8 +692,11 @@ module.exports = {
     updateRedes,
     buscarRedes,
     deleteRedes,
+    saveAssignmentInstructor,
+    reportAssigmentInstructorCourse,
     saveAssignment,
     listInstructorAssignment,
     reportAssigment,
-    reportAssigmentCareer
+    reportAssigmentCareer,
+    reportAssigmentGrader
 }
