@@ -18,8 +18,9 @@ app.use((req, res, next) => {
 });
 
 var people_router = require('./Routes/peopleRouter');
-var educativeAdministracion_router = require('./Routes/educativeAdministracionRouter')
-var family_router = require('./Routes/familyRouter')
+var educativeAdministracion_router = require('./Routes/educativeAdministracionRouter');
+var family_router = require('./Routes/familyRouter');
+var inscription_router = require('./Routes/inscriptionRouter');
 
 app.use(bodyParse.urlencoded({extended: false}));
 app.use(bodyParse.json());
@@ -27,5 +28,6 @@ app.use(bodyParse.json());
 app.use('/People',people_router);
 app.use('/EducativeAdministracion', educativeAdministracion_router);
 app.use('/Family', family_router);
+app.use('/Inscription', inscription_router);
 
 module.exports = app;

@@ -4,10 +4,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var inscriptionSchema = Schema({
-    student: String,
-    unitAcademy: [{}],
-    grade: {type: Schema.ObjectId, ref: 'Person'},
+    person: {type: Schema.ObjectId, ref: 'Person'},
+    unitAcademy: [],
+    jornada: {type: Schema.ObjectId, ref: 'Jornada'},
+    grade: {type: Schema.ObjectId, ref: 'Grade'},
     share: Number
 });
 
-module.exports = mongoose.model('Instructor', instructorSchema);
+module.exports = mongoose.model('Inscription', inscriptionSchema);
