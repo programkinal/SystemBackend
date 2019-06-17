@@ -11,7 +11,7 @@ var AssignmentInstructorCourse = require('../../models/assignmentInstructorCours
 var Grader = require('../../models/grader');
 var Jornada = require('../../models/jornada');
 var Section = require('../../models/section');
-var mongoose = require('mongoose')
+var CourseNetwork = require('../../models/CourseNetworks');
 
 function addAcademicUnits(req,res){
     var params = req.body;
@@ -452,13 +452,18 @@ function saveRedes(req,res){
 function updateRedes(req,res){
     var params = req.body;
     var id = req.params.id;
-    Redes.findByIdAndUpdate(id,params,{new: true}, (err,actualizando)=>{
-        if(err){
-            res.status(200).send({message: 'No se pudo actualizar'});
-        }else{
-            res.status(200).send({actualizado: actualizando});
-        }
-    })
+    if(params.career == params.careerAssigment){
+        Redes.findByIdAndUpdate(id,params,{new: true}, (err,actualizando)=>{
+            if(err){
+                res.status(200).send({message: 'No se pudo actualizar'});
+            }else{
+                res.status(200).send({actualizado: actualizando});
+            }
+        })
+    }else{
+        res.status(200).send({message: 'Las carreras tienen ser las mismas'})
+    }
+    
 }
 function deleteRedes(req,res){
     var id = req.params.id;
@@ -477,6 +482,27 @@ function buscarRedes(req,res){
             res.status(200).send({message: 'No se encontro'});
         }else{
             res.status(200).send({buscado: buscando});
+        }
+    })
+}
+function buscarRedAssignment(req,res){
+    Assignment.find({},(err,listar)=>{
+        if(err){
+            res.status(200).send({message: 'Error al listar'})
+        }else{
+            EducationalCareers.populate(listar,{path: 'career'},(err, resultadoCarrer)=>{
+                Person.populate(resultadoCarrer,{path: 'instructor'},(err,resultadoInstructor)=>{
+                    Course.populate(resultadoInstructor,{path: 'course'},(err,resultadoCourse)=>{
+                        if(err){
+                            res.status(200).send({message: 'Error al listar'});
+                        }else{
+                            res.status(200).send({asignaciones: resultadoCourse});
+                            console.log(resultadoCourse)
+                        }
+                    })
+                })
+            })
+            // console.log(carrreras)
         }
     })
 }
@@ -533,6 +559,7 @@ function reportAssigmentInstructorCourse(req,res){
                     res.status(200).send({message: 'Error en la busqueda'});
                 }else{
                     res.status(200).send({Assignment: listarCourse});
+                    // console.log('Este son los resultados: ' +)
                 }
             })
         })
@@ -679,8 +706,93 @@ function reportAssigmentSection(req,res){
         }
     })
 }
+/**----------------------------------------------------Asignaion de cursos a red de estudio e inscripcion------------------------------------------------------------------------ */
+function saveCourseNetworks(req,res){
+    var params = req.body;
+    var coursenetwork = new CourseNetwork;
 
+    if(params.red && params.career && params.grader && params.course){
+        CourseNetwork.findOne({red: params.red, career: params.career, grader: params.grader, course: params.course},(err,buscando)=>{
+            if(err){
+                res.status(200).send({message: 'Error al buscar'});
+            }else{
+                if(!buscando){
+                    coursenetwork.red = params.red;
+                    coursenetwork.career = params.career;
+                    coursenetwork.grader = params.grader;
+                    coursenetwork.course = params.course;
 
+                    coursenetwork.save((err,guardado)=>{
+                        if(err){
+                            res.status(200).send({message: 'Error al guardar'});
+                        }else{
+                            res.status(200).send({Guardado: guardado});
+                        }
+                    })
+                }else{
+                    res.status(200).send({message: 'El registro ya esta en la base de datos'});
+                }
+            }
+        })
+    }else{
+        res.status(200).send({message: 'Debes de llenar todos los campos'});
+    }
+}
+function reportCourseNetworks(){
+    CourseNetwork.find({},(err,listar)=>{
+        Redes.populate(listar, {path: 'red'},(err,ListarRed)=>{
+            Grader.populate(ListarRed,{path: 'grader'},(err,listar2)=>{
+                EducationalCareers.populate(listar2,{path: 'career'},(err, listarCareer)=>{
+                    Course.populate(listarCareer,{path: 'course'},(err,listarCourse)=>{
+                        if(err){
+                            res.status(200).send({message: 'Eror al listar'});
+                        }else{
+                            res.status(200).send({coursenetwork: listarCourse});
+                        }
+                    })
+                })
+            })
+        })
+    })
+}
+function updateCourseNetworks(req, res){
+    var courseNetworkId = req.params.id;
+    var params = req.body;
+
+    Instructor.findByIdAndUpdate(courseNetworkId, params, {new:true}, (err, courseNetworkUpdate) => {
+        if(err){
+            res.status(500).send({
+            message: 'Error al acutalizar'});
+        }else{
+            if(!courseNetworkUpdate){
+                res.status(404).send({message: 'No se ha podido actualizar'});
+            }else{
+                res.status(200).send({instructor: courseNetworkUpdate});
+            }
+        }
+    });
+}
+function deleteCourseNetwork(req, res){
+    var courseNetworkId = req.params.id;
+
+    Instructor.findByIdAndRemove(courseNetworkId, (err, instructorDelete) => {
+        if(err){
+            res.status(500).send({message: 'Error al eliminar'});
+        }else{
+            res.status(200).send({message: 'Se elimino correctamente'});
+        }
+    });
+}
+/**------------------------------------------------------Grader------------------------------------------------------------------- */
+function listGrader(req,res){
+    Grader.find({},(err,listar)=>{
+        if(err){
+            res.status(200).send({message: 'Error al  buscar'});
+        }else{
+            res.status(200).send({grader: listar});
+        }
+    })
+}
 module.exports = {
     addAcademicUnits,
     updatedAcademicUnit,
@@ -708,6 +820,7 @@ module.exports = {
     updateRedes,
     buscarRedes,
     deleteRedes,
+    buscarRedAssignment,
     saveAssignmentInstructor,
     reportAssigmentInstructorCourse,
     saveAssignment,
@@ -716,5 +829,10 @@ module.exports = {
     reportAssigmentCareer,
     reportAssigmentGrader,
     reportAssigmentSection,
-    reportAssigmentWorkindDay
+    reportAssigmentWorkindDay,
+    saveCourseNetworks,
+    reportCourseNetworks,
+    updateCourseNetworks,
+    deleteCourseNetwork,
+    listGrader
 }

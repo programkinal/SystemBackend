@@ -41,7 +41,7 @@ api.get('/listRedes', educativeAdministracionController.listRedes);
 api.put('/updateRedes/:id', educativeAdministracionController.updateRedes);
 api.get('/BuscarRedes/:id', educativeAdministracionController.buscarRedes);
 api.put('/deleteRedes/:id',educativeAdministracionController.deleteRedes);
-
+api.get('/Listar-Assignmete-Redes',educativeAdministracionController.buscarRedAssignment)
 /**----------------------------------------------------Asignacion por instructor a curso---------------------------- */
 api.post('/saveAssignmentInstructor-Course', educativeAdministracionController.saveAssignmentInstructor);
 api.get('/List-Assignment-Instructor-Course', educativeAdministracionController.reportAssigmentInstructorCourse);
@@ -53,5 +53,12 @@ api.post('/report-Assignment-Career', educativeAdministracionController.reportAs
 api.get('/report-Assignment-Grader', educativeAdministracionController.reportAssigmentGrader);
 api.get('/List-Assignment-Jornada', educativeAdministracionController.reportAssigmentWorkindDay);
 api.get('/List-Assignment-Section', educativeAdministracionController.reportAssigmentSection);
+/**----------------------------------------------CourseNetworks--------------------------------------------------- */
+api.post('/save-Course-Networks', educativeAdministracionController.saveCourseNetworks);
+api.get('/List-Course-Network', educativeAdministracionController.reportCourseNetworks);
+api.put('/Update-Course-Network/:id', educativeAdministracionController.updateCourseNetworks);
+api.put('/Delete-Course-Network/:id',educativeAdministracionController.deleteCourseNetwork);
 
+/**-------------------------------------------ListGrader------------------------------------------------------------------- */
+api.get('/ListGrader', educativeAdministracionController.listGrader);
 module.exports = api

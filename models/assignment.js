@@ -9,7 +9,7 @@ var assignmentSchema = Schema({
     section: String,
     course: [{type: Schema.ObjectId, ref: 'Course'}],
     instructor: {type: Schema.ObjectId, ref: 'Instructor'},
-    grader: String
+    grader: {type: Schema.ObjectId, ref: 'Grader'}
 
 });
 
