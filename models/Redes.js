@@ -9,8 +9,8 @@ var redesSchema = Schema({
     dateInit: String,
     dateFinal: String,
     careerAssigment: {type: Schema.ObjectId, ref: 'Career'},
-    grader: {type: Schema.ObjectId, ref:'Grader'},
-    course: {type: Schema.ObjectId, ref: 'Course'}
+    // grader: {type: Schema.ObjectId, ref:'Grader'},
+    // course: {type: Schema.ObjectId, ref: 'Course'}
 });
 
 module.exports = mongoose.model('Redes', redesSchema);

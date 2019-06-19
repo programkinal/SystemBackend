@@ -452,17 +452,18 @@ function saveRedes(req,res){
 function updateRedes(req,res){
     var params = req.body;
     var id = req.params.id;
-    if(params.career == params.careerAssigment){
+    // if(params.career == params.careerAssigment){
         Redes.findByIdAndUpdate(id,params,{new: true}, (err,actualizando)=>{
             if(err){
                 res.status(200).send({message: 'No se pudo actualizar'});
+                console.log(err)
             }else{
                 res.status(200).send({actualizado: actualizando});
             }
         })
-    }else{
-        res.status(200).send({message: 'Las carreras tienen ser las mismas'})
-    }
+    // }else{
+    //     res.status(200).send({message: 'Las carreras tienen ser las mismas'})
+    // }
     
 }
 function deleteRedes(req,res){
