@@ -2,6 +2,7 @@
 
 var express = require('express');
 var educativeAdministracionController = require('../Controllers/EducAdminController/educativeAdministracionController');
+var md_auth = require('../middlewares/authenticated');
 var api = express.Router();
 
 api.post('/Save-Units-Academic', educativeAdministracionController.addAcademicUnits);
@@ -20,8 +21,8 @@ api.post('/SearchCareer', educativeAdministracionController.searchEducationCaree
 
 
 /**---------------------------------------------------------COURSE------------------------------------------------------------------- */
-api.post('/Save-Course', educativeAdministracionController.saveCourse);
-api.get('/List-Course', educativeAdministracionController.listCourse);
+api.post('/Save-Course', md_auth.ensureAut,educativeAdministracionController.saveCourse);
+api.get('/List-Course',md_auth.ensureAut ,educativeAdministracionController.listCourse);
 api.put('/Update-Course/:id', educativeAdministracionController.updateCourse);
 api.put('/Delete-Course/:id', educativeAdministracionController.deleteCourse);
 api.post('/Search-Course', educativeAdministracionController.searchCourse);

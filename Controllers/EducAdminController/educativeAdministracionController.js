@@ -196,45 +196,50 @@ function saveCourse(req, res){
     var course = new Course();
     var params = req.body;
 
+    // if(req.user.rol == 'ADMIN'){
+    //     res.status(200).send({message: 'Si funciona'})
+    // }else{
     if(params.code && params.name){
-        course.code = params.code.toUpperCase();
-        course.name = params.name.toUpperCase();
-        course.description = params.description.toUpperCase();
+            course.code = params.code.toUpperCase();
+            course.name = params.name.toUpperCase();
+            course.description = params.description.toUpperCase();
 
-        Course.findOne({name: params.name},(err,buscandoNombre)=>{
-            if(err){
-                res.status(500).send({message: 'Ocurrio un error'});
-            }else{
-                if(!buscandoNombre){
-                    Course.findOne({code: params.code},(err, academica)=>{
-                        if(err){
-                            res.status(500).send({message: 'Error en la busqueda'});
-                        }else{
-                           if(!academica){
-                               course.save((err,guardado)=>{
-                                   if(err){
-                                       res.status(500).send({message: 'Ocurrio un error al guardar!!'});
-                                   }else{
-                                       if(!guardado){
-                                           res.status(404).send({message: 'Error en el sistema'});
-                                       }else{
-                                           res.status(200).send({Courso: guardado});
-                                       }
-                                   }
-                               })
-                           }else{
-                               res.status(200).send({message: 'El codigo ya fue registrado'});
-                           }
-                        }
-                    })
+            Course.findOne({name: params.name},(err,buscandoNombre)=>{
+                if(err){
+                    res.status(500).send({message: 'Ocurrio un error'});
                 }else{
-                    res.status(200).send({message: 'El nombre ya fue registrado'});
+                    if(!buscandoNombre){
+                        Course.findOne({code: params.code},(err, academica)=>{
+                            if(err){
+                                res.status(500).send({message: 'Error en la busqueda'});
+                            }else{
+                            if(!academica){
+                                course.save((err,guardado)=>{
+                                    if(err){
+                                        res.status(500).send({message: 'Ocurrio un error al guardar!!'});
+                                    }else{
+                                        if(!guardado){
+                                            res.status(404).send({message: 'Error en el sistema'});
+                                        }else{
+                                            res.status(200).send({Courso: guardado});
+                                        }
+                                    }
+                                })
+                            }else{
+                                res.status(200).send({message: 'El codigo ya fue registrado'});
+                            }
+                            }
+                        })
+                    }else{
+                        res.status(200).send({message: 'El nombre ya fue registrado'});
+                    }
                 }
-            }
-        })
-    }else{
-        res.status(200).send({message: 'Debes de llenar todos los campos'});
-    }
+            })
+        }else{
+            res.status(200).send({message: 'Debes de llenar todos los campos'});
+        }
+    // }
+    
 }
 
 function listCourse(req, res){

@@ -1,7 +1,7 @@
 'use strict';
 
-var jwt = require('./node_modules/jwt-simple');
-var moment = require('./node_modules/moment');
+var jwt = require('jwt-simple');
+var moment = require('moment');
 var secret = 'clave_super_secreta_del_proyecto';
 
 exports.ensureAut = function(req,res,next){
@@ -18,6 +18,6 @@ exports.ensureAut = function(req,res,next){
     }catch(exp){
         return res.status(404).send({message: 'El token no es valido'});
     }
-    req.person = payload;
+    req.user = payload;
     next();
 }
