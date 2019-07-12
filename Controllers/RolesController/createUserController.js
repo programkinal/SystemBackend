@@ -73,9 +73,12 @@ function deleteUser(req,res){
 
 function login(req,res){
     var params = req.body;
-    CreateUser.findOne({nameUser: params.nameUser.toUpperCase(), rol: params.rol},(err,user)=>{
+    CreateUser.findOne({nameUser: params.nameUser.toUpperCase(), rol: params.rol.toUpperCase()},(err,user)=>{
         if(err){
-            res.status(200).send({message: 'Error al inciar seccion'});
+            res.status(200).send({message: 'Error'});
+        }
+        else if(!user){
+            res.status(200).send({message: 'Error'});
         }else{
             bcrypt.compare(params.password, user.password,(err, check)=>{
                 if(check){
